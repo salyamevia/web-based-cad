@@ -30,3 +30,16 @@ var drawLine = function(x, y, rgb){
         return vertices
     }
 }
+
+var moveLine = function(canvas, event, selectedObject, idxPoint){
+    x = getXCoordinate(canvas, event)
+    y = getYCoordinate(canvas, event)   
+    x = (x / width) * 2 - 1
+    y = (y / height) * 2 - 1
+    arrObjects[selectedObject].vertices[idxPoint] = x
+    arrObjects[selectedObject].vertices[idxPoint+1] = y
+    console.log(arrObjects)
+    // draw(1, arrObjects[selectedObject].vertices, gl.POINTS)
+    // draw(2, arrObjects[selectedObject].vertices, gl.LINES)
+    drawAll()
+}

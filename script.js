@@ -21,6 +21,12 @@ var vertices = []
 var rgb = [0.0, 0.0, 0.0]
 var arrObjects = []
 
+function setMode(strMode){
+    mode = strMode
+    console.log(mode)
+}
+
+
 var getXCoordinate = function (canvas, event) {
   var rect = canvas.getBoundingClientRect()
   return event.clientX - rect.left
@@ -29,6 +35,19 @@ var getXCoordinate = function (canvas, event) {
 var getYCoordinate = function (canvas, event) {
     var rect = canvas.getBoundingClientRect()
     return rect.bottom - event.clientY
+}
+
+var isExistPoint = function (x, y) {
+    for (var i = 0; i < arrObjects.length; i++) {
+        for (var j = 0; j < arrObjects[i].vertices.length; j+=5) {
+            var distX = Math.abs(arrObjects[i].vertices[j] - x)
+            var distY = Math.abs(arrObjects[i].vertices[j+1] - y)
+            if (distX < 0.01 && distY < 0.01) {
+                return [i, j]
+            }
+        }
+    }
+    return -1
 }
 
 //draw polygon on canvas using gl shader program
@@ -85,17 +104,34 @@ var draw = function (n, vertices, method) {
     gl.drawArrays(method, 0, n)
 }
 
-    
+var drawAll = function () {
+    //clear canvas
+    gl.clearColor(1.0, 1.0, 1.0, 1.0)
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT)
+
+    for (var i = 0; i < arrObjects.length; i++) {
+        if (arrObjects[i].type == "line") {
+            draw(arrObjects[i].vertices.length/5, arrObjects[i].vertices, gl.POINTS)
+            draw(arrObjects[i].vertices.length/5, arrObjects[i].vertices, gl.LINES)
+        }
+        if (arrObjects[i].type == "polygon") {
+            draw(arrObjects[i].vertices.length/5, arrObjects[i].vertices, gl.POINTS)
+            draw(arrObjects[i].vertices.length/5, arrObjects[i].vertices, gl.TRIANGLE_FAN)
+        }
+    }
+}
+
 
 canvas.addEventListener("mousedown", function(e) {
+    isDrag = false
     x = getXCoordinate(canvas, e)
     y = getYCoordinate(canvas, e)   
     x = (x / width) * 2 - 1
     y = (y / height) * 2 - 1
     console.log('x : '+ x + ' y : ' + y)
-    draw(1, [x, y, rgb[0], rgb[1], rgb[2]], gl.POINTS)
     if (isLine) {
         if (mode == "create") {
+            draw(1, [x, y, rgb[0], rgb[1], rgb[2]], gl.POINTS)
             var line = drawLine(x, y, rgb)
             if (line != 0) {
                 var object = {
@@ -104,11 +140,22 @@ canvas.addEventListener("mousedown", function(e) {
                 }
                 arrObjects.push(object)
                 vertices = []
+            }   
+        }
+        if (mode == "move"){
+            var idx = isExistPoint(x, y)
+            // console.log("idx = " + idx)
+            if (idx != -1) {
+                selectedObject = idx[0]
+                idxPoint = idx[1]
+                isDrag = true
+                canvas.addEventListener("mouseup", (event) => moveLine(canvas, event, selectedObject, idxPoint), { once: true })
             }
         }
     }
     if (isPolygon){
         if (mode == "create") {
+            draw(1, [x, y, rgb[0], rgb[1], rgb[2]], gl.POINTS)
             var polygon = drawPolygon(countVertices, x, y, rgb)
             if (polygon != 0) {
                 var object = {
