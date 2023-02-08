@@ -1,15 +1,19 @@
 var n = 0
-var points = []
 
-var setLine = function(){
-    isLine = true
+var setPolygon = function(){
+    countVertices = document.getElementById('vertices').value
+    if(countVertices == null || countVertices < 3){
+        alert("Please input number of vertices")
+        return 0
+    }
+    isPolygon = true
+    isLine = false
     isSquare = false
     isRectangle = false
-    isPolygon = false
 }
 
-var drawLine = function(x, y, rgb){
-    if (n == 0){
+var drawPolygon = function(countVert, x, y, rgb){
+    if (n < countVert-1){
         vertices.push(x)
         vertices.push(y)
         vertices.push(rgb[0])
@@ -25,7 +29,7 @@ var drawLine = function(x, y, rgb){
         vertices.push(rgb[1])
         vertices.push(rgb[2])
         console.log(vertices)
-        draw(2, vertices, gl.LINES)
+        draw(countVert, vertices, gl.TRIANGLE_FAN)
         n = 0;
         return vertices
     }

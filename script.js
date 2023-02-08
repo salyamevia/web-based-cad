@@ -1,10 +1,11 @@
 var canvas = document.getElementById('canvas')
-var gl = canvas.getContext('webgl')
+var gl = canvas.getContext('webgl', {preserveDrawingBuffer: true})
 
 var isLine = false
 var isSquare = false
 var isRectangle = false
 var isPolygon = false
+var countVertices = 0
 var isDrag = false
 var mode = "create"
 
@@ -31,7 +32,7 @@ var getYCoordinate = function (canvas, event) {
 }
 
 //draw polygon on canvas using gl shader program
-var drawPolygon = function (n, vertices, method) {
+var draw = function (n, vertices, method) {
     var vertexShaderCode = 
     `precision mediump float;
 
@@ -42,6 +43,7 @@ var drawPolygon = function (n, vertices, method) {
     void main() {
         fragColor = vertColor;
         gl_Position = vec4(vertPosition, 0.0, 1.0);
+        gl_PointSize = 10.0;
     }`
     var fragmentShaderCode = 
     `precision mediump float;
@@ -91,11 +93,9 @@ canvas.addEventListener("mousedown", function(e) {
     x = (x / width) * 2 - 1
     y = (y / height) * 2 - 1
     console.log('x : '+ x + ' y : ' + y)
+    draw(1, [x, y, rgb[0], rgb[1], rgb[2]], gl.POINTS)
     if (isLine) {
         if (mode == "create") {
-            // vertices.push(x, y, rgb[0], rgb[1], rgb[2])
-            // draw point on canvas using webgl
-
             var line = drawLine(x, y, rgb)
             if (line != 0) {
                 var object = {
@@ -105,9 +105,19 @@ canvas.addEventListener("mousedown", function(e) {
                 arrObjects.push(object)
                 vertices = []
             }
-            // draw line on canvas using webgl
-            // drawPolygon(vertices.length, vertices, gl.LINE)
-
+        }
+    }
+    if (isPolygon){
+        if (mode == "create") {
+            var polygon = drawPolygon(countVertices, x, y, rgb)
+            if (polygon != 0) {
+                var object = {
+                    type: "polygon",
+                    vertices: polygon
+                }
+                arrObjects.push(object)
+                vertices = []
+            }
         }
     }
 })
