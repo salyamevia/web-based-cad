@@ -42,6 +42,11 @@
             <button
               type="button"
               class="btn btn-outline-secondary"
+              data-bs-toggle="collapse"
+              href="#multiCollapseSquare"
+              role="button"
+              aria-expanded="false"
+              aria-controls="multiCollapseSquare"
               onclick="setSquare()"
             >
               <i class="bi bi-square"></i>
@@ -160,7 +165,24 @@
 
           <hr />
           <!-- Tool Specific -->
-          <p>hello</p>
+          <div class="collapse multi-collapse" id="multiCollapseSquare">
+            <div class="d-flex flex-column">
+                <b
+                  ><label for="squareSize" class="form-label"
+                    >Square Size</label
+                  ></b
+                >
+                <div class="input-group mb-3">
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="squareSize"
+                    name="squareSize"
+                    value="0.5"
+                    aria-describedby="basic-addon3"
+                  />
+                </div>
+          </div>
         </div>
       </div>
     </div>
@@ -171,6 +193,7 @@
     </script>
     <script src="script.js"></script>
     <script src="line.js"></script>
+    <script src="square.js"></script>
     <script src="polygon.js"></script>
   </body>
 </html>

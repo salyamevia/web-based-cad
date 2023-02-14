@@ -13,6 +13,7 @@ var x = 0;
 var y = 0;
 var width = document.getElementById('canvas').width;
 var height = document.getElementById('canvas').height;
+var size = 0.5;
 
 var selectedObject;
 var idxPoint;
@@ -71,10 +72,17 @@ var isExistPoint = function (x, y) {
   return -1;
 };
 
-/* =============== FUNCTIONALITY FUNCTIONS =============== */
+/* =============== RENDERER FUNCTIONS =============== */
 
+/**
+ * Draw single object on canvas using gl shader
+ * @param {int} n Number of edges within the shape
+ * @param {array} vertices Array of vertice coordinates
+ * @param {gl} method Rendering method
+ */
 //draw polygon on canvas using gl shader program
 var draw = function (n, vertices, method) {
+  // Basic shader for vertex and fragment
   var vertexShaderCode = `precision mediump float;
 
     attribute vec2 vertPosition;
@@ -94,13 +102,16 @@ var draw = function (n, vertices, method) {
         gl_FragColor = vec4(fragColor, 1.0);
     }`;
 
+  // Compile shader
   var vertexShader = gl.createShader(gl.VERTEX_SHADER);
   gl.shaderSource(vertexShader, vertexShaderCode);
   gl.compileShader(vertexShader);
+
   var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
   gl.shaderSource(fragmentShader, fragmentShaderCode);
   gl.compileShader(fragmentShader);
 
+  // Create Program
   var program = gl.createProgram();
   gl.attachShader(program, vertexShader);
   gl.attachShader(program, fragmentShader);
@@ -108,10 +119,12 @@ var draw = function (n, vertices, method) {
   gl.validateProgram(program);
   // gl.useProgram(program)
 
+  // Create buffer object for the vertices
   var vertexBufferObject = gl.createBuffer();
   gl.bindBuffer(gl.ARRAY_BUFFER, vertexBufferObject);
   gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
+  // Setup vertex attributes
   var positionAttribLocation = gl.getAttribLocation(program, 'vertPosition');
   gl.enableVertexAttribArray(positionAttribLocation);
   gl.vertexAttribPointer(
@@ -122,6 +135,8 @@ var draw = function (n, vertices, method) {
     5 * Float32Array.BYTES_PER_ELEMENT,
     0
   );
+
+  // Color the shape
   var colorAttribLocation = gl.getAttribLocation(program, 'vertColor');
   gl.enableVertexAttribArray(colorAttribLocation);
   gl.vertexAttribPointer(
@@ -138,31 +153,53 @@ var draw = function (n, vertices, method) {
   gl.drawArrays(method, 0, n);
 };
 
+/**
+ * Render all objects within object array
+ */
 var drawAll = function () {
-  //clear canvas
+  // Clear canvas
   gl.clearColor(1.0, 1.0, 1.0, 1.0);
   gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
+  // Start drawing each object
   for (var i = 0; i < arrObjects.length; i++) {
-    if (arrObjects[i].type == 'line') {
-      draw(
-        arrObjects[i].vertices.length / 5,
-        arrObjects[i].vertices,
-        gl.POINTS
-      );
-      draw(arrObjects[i].vertices.length / 5, arrObjects[i].vertices, gl.LINES);
-    }
-    if (arrObjects[i].type == 'polygon') {
-      draw(
-        arrObjects[i].vertices.length / 5,
-        arrObjects[i].vertices,
-        gl.POINTS
-      );
-      draw(
-        arrObjects[i].vertices.length / 5,
-        arrObjects[i].vertices,
-        gl.TRIANGLE_FAN
-      );
+    switch (arrObjects[i].type) {
+      case 'line':
+        draw(
+          arrObjects[i].vertices.length / 5,
+          arrObjects[i].vertices,
+          gl.POINTS
+        );
+        draw(
+          arrObjects[i].vertices.length / 5,
+          arrObjects[i].vertices,
+          gl.LINES
+        );
+        break;
+      case 'square':
+        draw(
+          arrObjects[i].vertices.length / 5,
+          arrObjects[i].vertices,
+          gl.POINTS
+        );
+        draw(
+          arrObjects[i].vertices.length / 5,
+          arrObjects[i].vertices,
+          gl.TRIANGLE_FAN
+        );
+        break;
+      case 'polygon':
+        draw(
+          arrObjects[i].vertices.length / 5,
+          arrObjects[i].vertices,
+          gl.POINTS
+        );
+        draw(
+          arrObjects[i].vertices.length / 5,
+          arrObjects[i].vertices,
+          gl.TRIANGLE_FAN
+        );
+        break;
     }
   }
 
@@ -170,6 +207,8 @@ var drawAll = function () {
     drawAll();
   });
 };
+
+/* =============== FUNCTIONALITY FUNCTIONS =============== */
 
 window.requestAnimationFrame = function () {
   return (
@@ -187,6 +226,8 @@ canvas.addEventListener('mouseup', function mouseUp() {
   // canvas.removeEventListener("mousemove", moveLine)
   // canvas.removeEventListener("mouseup", mouseUp)
 });
+
+/* =============== DRAWING MODE EVENT HANDLER =============== */
 
 canvas.addEventListener('mousemove', function (event) {
   if (isLine) {
@@ -224,6 +265,8 @@ canvas.addEventListener('mousedown', function (e) {
   x = getXCoordinate(canvas, e);
   y = getYCoordinate(canvas, e);
   console.log('x : ' + x + ' y : ' + y);
+
+  // LINE
   if (isLine) {
     if (mode == 'move') {
       var idx = isExistPoint(x, y);
@@ -247,6 +290,24 @@ canvas.addEventListener('mousedown', function (e) {
       }
     }
   }
+  // SQUARE
+  if (isSquare) {
+    switch (mode) {
+      case 'create':
+        draw(1, [x, y, rgb[0], rgb[1], rgb[2]], gl.POINTS);
+
+        customSize = parseFloat(document.getElementById('squareSize').value);
+        size = customSize != null ? customSize : size;
+
+        var square = drawSquare(x, y, size, rgb);
+        if (square != 0) {
+          arrObjects.push({ type: 'square', vertices: square });
+          vertices = [];
+        }
+        break;
+    }
+  }
+  // POLYGON
   if (isPolygon) {
     if (mode == 'create') {
       draw(1, [x, y, rgb[0], rgb[1], rgb[2]], gl.POINTS);
