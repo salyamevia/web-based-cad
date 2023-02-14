@@ -1,38 +1,176 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>WebGL 2D CAD</title>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
-        <h2>WebGL 2D CAD</h2>
-        <p><i>Choose your object type and draw it on canvas below</i></p>
-        <a href="help.pdf" > Help </a>
-        <section class="center">
-            <div id="container">
-                <canvas id="canvas" width="600" height="450"> Your browser does not support HTML5 </canvas>
+  <head>
+    <title>WebGL 2D CAD</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+      crossorigin="anonymous"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container m-2">
+      <h1>WebGL 2D CAD</h1>
+      <p>
+        <i>2) Choose your object type and draw it on canvas below</i>.
+        <a href="help.pdf"> Help </a>
+      </p>
+      <div class="d-flex flex-row gap-5">
+        <div class="d-grid gap-3">
+          <!-- Select drawing tools -->
+          <div>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              onclick="setLine()"
+            >
+              <i class="bi bi-slash-lg"></i>
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              onclick="setSquare()"
+            >
+              <i class="bi bi-square"></i>
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              onclick="setRectangle()"
+            >
+              <i class="bi bi-file"></i>
+            </button>
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              onclick="setPolygon()"
+            >
+              <i class="bi bi-octagon"></i>
+            </button>
+          </div>
+
+          <!-- Drawing canvas -->
+          <canvas id="canvas" width="720" height="450">
+            Your browser does not support HTML5
+          </canvas>
+        </div>
+        <div class="d-flex flex-column gap-2">
+          <!-- Select Drawing Modes -->
+
+          <div class="d-flex flex-column">
+            <b>1) Select Drawing Mode</b>
+            <div class="dropdown">
+              <button
+                class="btn btn-secondary dropdown-toggle"
+                type="button"
+                id="drawingMode"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+              >
+                None
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="drawingMode">
+                <li>
+                  <a
+                    class="dropdown-item"
+                    onclick="setMode('create');updateSelector(this)"
+                    >Create</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    onclick="setDelete();updateSelector(this)"
+                    >Delete</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    onclick="setMode('move');updateSelector(this)"
+                    >Move</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    onclick="setMode('translation');updateSelector(this)"
+                    >Translation</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    onclick="setMode('dilatation');updateSelector(this)"
+                    >Dilatation</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    onclick="setMode('rotation');updateSelector(this)"
+                    >Rotation</a
+                  >
+                </li>
+              </ul>
             </div>
-            <input type="button" id="btn_line" value="Line" onclick="setLine()">
-            <input type="button" id="btn_square" value="Square" onclick="setSquare()">
-            <input type="button" id="btn_rectangle" value="Rectangle" onclick="setRectangle()">
-            <input type="button" id="btn_polygon" value="Polygon" onclick="setPolygon()">
-            <label for="vertices">Number of Polygon Vertices</label>
-            <input type="number" id="vertices" name="vertices">
-        </section>
-        <p><i>Choose your transformation and apply it on your object</i></p>
-        <section class="center">
-            <input type="button" id="btn_create" value="Create" onclick="setMode('create')">
-            <input type="button" id="btn_delete" value="Delete" onclick="setDelete()">
-            <input type="button" id="btn_move" value="Move" onclick="setMode('move')">
-            <input type="button" id="btn_translation" value="Translation" onclick="setMode('translation')">
-            <input type="button" id="btn_dilatation" value="Dilatation" onclick="setMode('dilatation')">
-            <input type="button" id="btn_rotation" value="Rotation" onclick="setMode('rotation')">
-            <input type="button" id="btn_change_color" value="Change Color" onclick="setColor()">
-        </section>
-        <script src="script.js"></script>
-        <script src="line.js"></script>
-        <script src="polygon.js"></script>
-    </body>
+          </div>
+
+          <!-- Properties -->
+          <!-- Mandatory -->
+          <div class="d-flex flex-column">
+            <b>Change Color</b>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="setColor()"
+            >
+              Change Color
+            </button>
+          </div>
+          <div class="d-flex flex-column">
+            <b
+              ><label for="vertices" class="form-label"
+                >Number of Polygon Vertices</label
+              ></b
+            >
+            <div class="input-group mb-3">
+              <input
+                type="number"
+                class="form-control"
+                id="vertices"
+                name="vertices"
+                aria-describedby="basic-addon3"
+              />
+            </div>
+          </div>
+
+          <hr />
+          <!-- Tool Specific -->
+          <p>hello</p>
+        </div>
+      </div>
+    </div>
+    <script>
+      let updateSelector = (item) => {
+        document.getElementById('drawingMode').innerHTML = item.innerHTML;
+      };
+    </script>
+    <script src="script.js"></script>
+    <script src="line.js"></script>
+    <script src="polygon.js"></script>
+  </body>
 </html>
