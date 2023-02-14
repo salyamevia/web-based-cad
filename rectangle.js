@@ -1,7 +1,5 @@
-var customSize = 0;
-
 /**
- * Set the drawing tool to Square
+ * Set the drawing tool to Rectangle
  */
 let setRectangle = () => {
   isLine = false;
@@ -18,8 +16,8 @@ let setRectangle = () => {
  * @returns
  */
 
-let drawRectangle = (x, y, size, rgb) => {
-  vertices.push(x + size);
+let drawRectangle = (x, y, rectWidth, rectHeight, rgb) => {
+  vertices.push(x + rectWidth);
   vertices.push(y);
   vertices.push(0);
   vertices.push(0);
@@ -31,14 +29,14 @@ let drawRectangle = (x, y, size, rgb) => {
   vertices.push(0);
   vertices.push(1);
 
-  vertices.push(x + size);
-  vertices.push(y + size);
+  vertices.push(x + rectWidth);
+  vertices.push(y + rectHeight);
   vertices.push(0);
   vertices.push(0);
   vertices.push(1);
 
   vertices.push(x);
-  vertices.push(y + size);
+  vertices.push(y + rectHeight);
   vertices.push(0);
   vertices.push(0);
   vertices.push(1);

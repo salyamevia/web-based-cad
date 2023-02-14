@@ -43,7 +43,7 @@
               type="button"
               class="btn btn-outline-secondary"
               data-bs-toggle="collapse"
-              href="#multiCollapseSquare"
+              data-bs-target="#multiCollapseSquare"
               role="button"
               aria-expanded="false"
               aria-controls="multiCollapseSquare"
@@ -54,6 +54,11 @@
             <button
               type="button"
               class="btn btn-outline-secondary"
+              data-bs-toggle="collapse"
+              data-bs-target="#multiCollapseRectangle"
+              role="button"
+              aria-expanded="false"
+              aria-controls="multiCollapseRectangle"
               onclick="setRectangle()"
             >
               <i class="bi bi-file"></i>
@@ -183,6 +188,41 @@
                   />
                 </div>
           </div>
+        
+        </div>
+        
+      <div class="collapse multi-collapse" id="multiCollapseRectangle">
+          <div class="d-flex flex-column">
+              <b
+                ><label for="rectWidth" class="form-label"
+                  >Rectangle Width</label
+                ></b
+              >
+              <div class="input-group mb-3">
+                <input
+                  type="number"
+                  class="form-control"
+                  id="rectWidth"
+                  name="rectWidth"
+                  value="0.5"
+                  aria-describedby="basic-addon3"
+                />
+              </div>
+              <b
+                ><label for="rectHeight" class="form-label"
+                  >Rectangle Height</label
+                ></b
+              >
+              <div class="input-group mb-3">
+                <input
+                  type="number"
+                  class="form-control"
+                  id="rectHeight"
+                  name="rectHeight"
+                  value="0.3"
+                  aria-describedby="basic-addon3"
+                />
+              </div>
         </div>
       </div>
     </div>
@@ -194,6 +234,7 @@
     <script src="script.js"></script>
     <script src="line.js"></script>
     <script src="square.js"></script>
+    <script src="rectangle.js"></script>
     <script src="polygon.js"></script>
   </body>
 </html>

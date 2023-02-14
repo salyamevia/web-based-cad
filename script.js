@@ -13,7 +13,9 @@ var x = 0;
 var y = 0;
 var width = document.getElementById('canvas').width;
 var height = document.getElementById('canvas').height;
-var size = 0.5;
+var size = 0.5; // Square default size
+var rectWidth = 0.5; // Rectangle default width
+var rectHeight = 0.2; // Rectangle default height
 
 var selectedObject;
 var idxPoint;
@@ -78,7 +80,7 @@ var isExistPoint = function (x, y) {
  * Draw single object on canvas using gl shader
  * @param {int} n Number of edges within the shape
  * @param {array} vertices Array of vertice coordinates
- * @param {gl} method Rendering method
+ * @param {gl} method Rendering method (gl.TRIANGLE_STRIP, gl.LINES)
  */
 //draw polygon on canvas using gl shader program
 var draw = function (n, vertices, method) {
@@ -302,6 +304,29 @@ canvas.addEventListener('mousedown', function (e) {
         var square = drawSquare(x, y, size, rgb);
         if (square != 0) {
           arrObjects.push({ type: 'square', vertices: square });
+          vertices = [];
+        }
+        break;
+    }
+  }
+  // RECTANGLE
+  if (isRectangle) {
+    switch (mode) {
+      case 'create':
+        draw(1, [x, y, rgb[0], rgb[1], rgb[2]], gl.POINTS);
+
+        customRectWidth = parseFloat(
+          document.getElementById('rectWidth').value
+        );
+        customRectHeight = parseFloat(
+          document.getElementById('rectHeight').value
+        );
+        rectWidth = customRectWidth != null ? customRectWidth : rectWidth;
+        rectHeight = customRectHeight != null ? customRectHeight : rectHeight;
+
+        var rectangle = drawRectangle(x, y, rectWidth, rectHeight, rgb);
+        if (square != 0) {
+          arrObjects.push({ type: 'rectangle', vertices: rectangle });
           vertices = [];
         }
         break;

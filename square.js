@@ -1,5 +1,3 @@
-var customSize = 0;
-
 /**
  * Set the drawing tool to Square
  */
