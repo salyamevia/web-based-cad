@@ -152,6 +152,30 @@ canvas.addEventListener("mousedown", function(e) {
                 canvas.addEventListener("mouseup", (event) => moveLine(canvas, event, selectedObject, idxPoint), { once: true })
             }
         }
+        if (mode == "translation"){
+            var idx = isExistLine(x, y)
+            console.log("idx = " + idx)
+            if (idx != -1) {
+                isDrag = true
+                canvas.addEventListener("mouseup", (event) => translateLine(canvas, event, idx, x, y), { once: true })
+            }
+        }
+        if (mode == "rotation"){
+            var idx = isExistLine(x, y)
+            console.log("idx = " + idx)
+            if (idx != -1) {
+                isDrag = true
+                canvas.addEventListener("mouseup", (event) => rotateLine(canvas, event, idx, x, y), { once: true })
+            }
+        }
+        if (mode == "dilatation"){
+            var idx = isExistLine(x, y)
+            console.log("idx = " + idx)
+            if (idx != -1) {
+                isDrag = true
+                canvas.addEventListener("mouseup", (event) => dilateLine(canvas, event, idx, x, y), { once: true })
+            }
+        }
     }
     if (isPolygon){
         if (mode == "create") {
