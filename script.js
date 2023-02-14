@@ -29,12 +29,12 @@ function setMode(strMode){
 
 var getXCoordinate = function (canvas, event) {
   var rect = canvas.getBoundingClientRect()
-  return event.clientX - rect.left
+  return ((event.clientX - rect.left)/width) * 2 - 1
 }
 
 var getYCoordinate = function (canvas, event) {
     var rect = canvas.getBoundingClientRect()
-    return rect.bottom - event.clientY
+    return ((rect.bottom - event.clientY)/height) * 2 - 1
 }
 
 var isExistPoint = function (x, y) {
@@ -119,17 +119,75 @@ var drawAll = function () {
             draw(arrObjects[i].vertices.length/5, arrObjects[i].vertices, gl.TRIANGLE_FAN)
         }
     }
+
+    window.requestAnimationFrame(function(){
+        drawAll()
+    })
 }
+
+window.requestAnimationFrame = (function(){
+    return window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    function(callback){
+        window.setTimeout(callback, 1000/60);
+    };
+})
+
+canvas.addEventListener("mouseup", function mouseUp() {
+    isDrag = false
+    // canvas.removeEventListener("mousemove", moveLine)
+    // canvas.removeEventListener("mouseup", mouseUp)
+})
+
+canvas.addEventListener("mousemove", function(event) {
+    if (isLine){
+        if (mode == "move") {
+            if (selectedObject != -1 && isDrag) {
+                moveLine(canvas, event, selectedObject, idxPoint)
+            }
+        }
+        if (mode == "translation"){
+            if (selectedObject != -1 && isDrag) {
+                var temp = translateLine(canvas, event, selectedObject, x, y)
+                x = temp[0]
+                y = temp[1]
+            }
+        }
+        if (mode == "rotation"){
+            if (selectedObject != -1 && isDrag) {
+                var temp = rotateLine(canvas, event, selectedObject, x, y)
+                x = temp[0]
+                y = temp[1]
+            }
+        }
+        if (mode == "dilatation"){
+            if (selectedObject != -1 && isDrag) {
+                var temp = dilateLine(canvas, event, selectedObject, x, y)
+                x = temp[0]
+                y = temp[1]
+            }
+        }
+    }
+})
 
 
 canvas.addEventListener("mousedown", function(e) {
-    isDrag = false
+    isDrag = true
     x = getXCoordinate(canvas, e)
     y = getYCoordinate(canvas, e)   
-    x = (x / width) * 2 - 1
-    y = (y / height) * 2 - 1
     console.log('x : '+ x + ' y : ' + y)
     if (isLine) {
+        if(mode == "move"){
+            var idx = isExistPoint(x, y)
+            if (idx != -1) {
+                selectedObject = idx[0]
+                idxPoint = idx[1]
+            }
+        }
+        else{
+            selectedObject = isExistLine(x, y)
+        }
         if (mode == "create") {
             draw(1, [x, y, rgb[0], rgb[1], rgb[2]], gl.POINTS)
             var line = drawLine(x, y, rgb)
@@ -141,40 +199,6 @@ canvas.addEventListener("mousedown", function(e) {
                 arrObjects.push(object)
                 vertices = []
             }   
-        }
-        if (mode == "move"){
-            var idx = isExistPoint(x, y)
-            // console.log("idx = " + idx)
-            if (idx != -1) {
-                selectedObject = idx[0]
-                idxPoint = idx[1]
-                isDrag = true
-                canvas.addEventListener("mouseup", (event) => moveLine(canvas, event, selectedObject, idxPoint), { once: true })
-            }
-        }
-        if (mode == "translation"){
-            var idx = isExistLine(x, y)
-            console.log("idx = " + idx)
-            if (idx != -1) {
-                isDrag = true
-                canvas.addEventListener("mouseup", (event) => translateLine(canvas, event, idx, x, y), { once: true })
-            }
-        }
-        if (mode == "rotation"){
-            var idx = isExistLine(x, y)
-            console.log("idx = " + idx)
-            if (idx != -1) {
-                isDrag = true
-                canvas.addEventListener("mouseup", (event) => rotateLine(canvas, event, idx, x, y), { once: true })
-            }
-        }
-        if (mode == "dilatation"){
-            var idx = isExistLine(x, y)
-            console.log("idx = " + idx)
-            if (idx != -1) {
-                isDrag = true
-                canvas.addEventListener("mouseup", (event) => dilateLine(canvas, event, idx, x, y), { once: true })
-            }
         }
     }
     if (isPolygon){

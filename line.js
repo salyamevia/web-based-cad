@@ -53,9 +53,8 @@ var isExistLine = function (x, y) {
 
 var moveLine = function(canvas, event, selectedObject, idxPoint){
     x = getXCoordinate(canvas, event)
-    y = getYCoordinate(canvas, event)   
-    x = (x / width) * 2 - 1
-    y = (y / height) * 2 - 1
+    y = getYCoordinate(canvas, event)
+    // let {x, y} = getMousePosition(canvas, event)   
     arrObjects[selectedObject].vertices[idxPoint] = x
     arrObjects[selectedObject].vertices[idxPoint+1] = y
     console.log(arrObjects)
@@ -65,25 +64,22 @@ var moveLine = function(canvas, event, selectedObject, idxPoint){
 }
 
 var translateLine = function(canvas, event, selectedObject, x, y){
+    console.log(x,y)
     newx = getXCoordinate(canvas, event)
     newy = getYCoordinate(canvas, event)   
-    newx = (newx / width) * 2 - 1
-    newy = (newy / height) * 2 - 1
     console.log(newx, newy)
     arrObjects[selectedObject].vertices[0] += (newx - x)
     arrObjects[selectedObject].vertices[1] += (newy - y)
     arrObjects[selectedObject].vertices[5] += (newx - x)
     arrObjects[selectedObject].vertices[6] += (newy - y)
-    // draw(1, arrObjects[selectedObject].vertices, gl.POINTS)
-    // draw(2, arrObjects[selectedObject].vertices, gl.LINES)
+    console.log(arrObjects[selectedObject].vertices[0], arrObjects[selectedObject].vertices[1], arrObjects[selectedObject].vertices[5], arrObjects[selectedObject].vertices[6])
     drawAll()
+    return [newx, newy]
 }
 
 var rotateLine = function(canvas, event, selectedObject, x, y){
     newx = getXCoordinate(canvas, event)
     newy = getYCoordinate(canvas, event)   
-    newx = (newx / width) * 2 - 1
-    newy = (newy / height) * 2 - 1
     midx = (arrObjects[selectedObject].vertices[0] + arrObjects[selectedObject].vertices[5]) / 2
     midy = (arrObjects[selectedObject].vertices[1] + arrObjects[selectedObject].vertices[6]) / 2
     var angle = Math.atan2(newy - midy, newx - midx) - Math.atan2(y - midy, x - midx)
@@ -99,13 +95,12 @@ var rotateLine = function(canvas, event, selectedObject, x, y){
     arrObjects[selectedObject].vertices[5] = (temp5 - midx) * cos - (temp6 - midy) * sin + midx
     arrObjects[selectedObject].vertices[6] = (temp5 - midx) * sin + (temp6 - midy) * cos + midy
     drawAll()
+    return [newx, newy]
 }
 
 var dilateLine = function(canvas, event, selectedObject, x, y){
     newx = getXCoordinate(canvas, event)
     newy = getYCoordinate(canvas, event)   
-    newx = (newx / width) * 2 - 1
-    newy = (newy / height) * 2 - 1
     midx = (arrObjects[selectedObject].vertices[0] + arrObjects[selectedObject].vertices[5]) / 2
     midy = (arrObjects[selectedObject].vertices[1] + arrObjects[selectedObject].vertices[6]) / 2
     var dist = Math.sqrt(Math.pow(newx - midx, 2) + Math.pow(newy - midy, 2))
@@ -117,4 +112,5 @@ var dilateLine = function(canvas, event, selectedObject, x, y){
     arrObjects[selectedObject].vertices[5] = (arrObjects[selectedObject].vertices[5] - midx) * scale + midx
     arrObjects[selectedObject].vertices[6] = (arrObjects[selectedObject].vertices[6] - midy) * scale + midy
     drawAll()
+    return [newx, newy]
 }
