@@ -1,5 +1,23 @@
 var canvas = document.getElementById('canvas');
 var gl = canvas.getContext('webgl', { preserveDrawingBuffer: true });
+var redSlider = document.getElementById("red");
+var greenSlider = document.getElementById("green");
+var blueSlider = document.getElementById("blue");
+var colorCheckbox = document.getElementById("color-all");
+
+var red = 0.0;
+redSlider.oninput = function () {
+    red = this.value / 255;
+}
+var green = 0.0;
+greenSlider.oninput = function () {
+    green = this.value / 255;
+}
+var blue = 0.0;
+blueSlider.oninput = function () {
+    blue = this.value / 255;
+}
+
 
 var isLine = false;
 var isSquare = false;
@@ -33,6 +51,15 @@ var arrObjects = [];
 function setMode(strMode) {
   mode = strMode;
   console.log(mode);
+}
+
+function setColor(){
+    if (colorCheckbox.checked == true){
+        mode = "colorAll";
+    }
+    else{
+        mode = 'color';
+    }
 }
 
 /**
@@ -73,6 +100,22 @@ var isExistPoint = function (x, y) {
   }
   return -1;
 };
+
+var changeColor = function (selectedObject, idxPoint) {
+    arrObjects[selectedObject].vertices[idxPoint+2] = red;
+    arrObjects[selectedObject].vertices[idxPoint+3] = green;
+    arrObjects[selectedObject].vertices[idxPoint+4] = blue;
+    drawAll();
+}
+
+var changeColorAll = function (selectedObject) {
+    for (var i = 0; i < arrObjects[selectedObject].vertices.length; i += 5) {
+        arrObjects[selectedObject].vertices[i+2] = red;
+        arrObjects[selectedObject].vertices[i+3] = green;
+        arrObjects[selectedObject].vertices[i+4] = blue;
+    }
+    drawAll();
+}
 
 /* =============== RENDERER FUNCTIONS =============== */
 
@@ -298,7 +341,7 @@ canvas.addEventListener('mousedown', function (e) {
 
   // LINE
   if (isLine) {
-    if (mode == 'move') {
+    if (mode == 'move' || mode == 'color') {
       var idx = isExistPoint(x, y);
       if (idx != -1) {
         selectedObject = idx[0];
@@ -318,6 +361,16 @@ canvas.addEventListener('mousedown', function (e) {
         arrObjects.push(object);
         vertices = [];
       }
+    }
+    if (mode == 'color') {
+        if (selectedObject != -1) {
+            changeColor(selectedObject, idxPoint);
+        }
+    }
+    if (mode == 'colorAll') {
+        if (selectedObject != -1) {
+            changeColorAll(selectedObject);
+        }
     }
   }
   // SQUARE
@@ -362,7 +415,7 @@ canvas.addEventListener('mousedown', function (e) {
   }
   // POLYGON
   if (isPolygon) {
-    if (mode == 'move') {
+    if (mode == 'move' || mode == 'color') {
         var idx = isExistPoint(x, y);
         if (idx != -1) {
           selectedObject = idx[0];
@@ -382,6 +435,16 @@ canvas.addEventListener('mousedown', function (e) {
         arrObjects.push(object);
         vertices = [];
       }
+    }
+    if (mode == 'color') {
+        if (selectedObject != -1) {
+            changeColor(selectedObject, idxPoint);
+        }
+    }
+    if (mode == 'colorAll') {
+        if (selectedObject != -1) {
+            changeColorAll(selectedObject);
+        }
     }
   }
 });
