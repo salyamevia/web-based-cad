@@ -61,6 +61,14 @@ var isExistPolygon = function (x, y) {
     return -1
 }
 
+var moveVertex = function(canvas, event, selectedObject, idxPoint){
+    x = getXCoordinate(canvas, event)
+    y = getYCoordinate(canvas, event) 
+    arrObjects[selectedObject].vertices[idxPoint] = x
+    arrObjects[selectedObject].vertices[idxPoint+1] = y
+    drawAll()
+}
+
 var translatePolygon = function(canvas, event, selectedObject, x, y){
     console.log(x,y)
     newx = getXCoordinate(canvas, event)
