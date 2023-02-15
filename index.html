@@ -21,7 +21,7 @@
     />
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body>
+  <body onload="loadFile()">
     <div class="container m-2">
       <h1>WebGL 2D CAD</h1>
       <p>
@@ -178,6 +178,25 @@
                 aria-describedby="basic-addon3"
               />
             </div>
+          </div>
+          <div class="file-container">
+            <b>Save/Load Model</b>
+            <input type="file" id="input-file" name="filename">
+            <!-- <input type="submit" onclick="loadFile()"> -->
+            <!-- <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="loadFile()"
+            >
+              Submit
+            </button> -->
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="saveFile()"
+            >
+              Save
+            </button>
           </div>
 
           <hr />

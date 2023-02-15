@@ -117,6 +117,33 @@ var changeColorAll = function (selectedObject) {
     drawAll();
 }
 
+function saveFile() {
+    //convert arrObjects to json file and download it
+    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(arrObjects));
+    var downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href",     dataStr);
+    downloadAnchorNode.setAttribute("download", "model" + ".json");
+    document.body.appendChild(downloadAnchorNode); // required for firefox
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+}
+
+function loadFile() {
+    document.getElementById('input-file').addEventListener('change', handleFileSelect, false);
+}
+  
+function handleFileSelect(event) {
+    const reader = new FileReader()
+    reader.onload = handleFileLoad;
+    reader.readAsText(event.target.files[0])
+}
+
+function handleFileLoad(event) {
+    console.log(event);
+    arrObjects = JSON.parse(event.target.result)
+    drawAll()
+}
+
 /* =============== RENDERER FUNCTIONS =============== */
 
 /**
