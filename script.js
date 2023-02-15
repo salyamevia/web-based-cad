@@ -357,6 +357,7 @@ canvas.addEventListener('mousedown', function (e) {
   }
   // POLYGON
   if (isPolygon) {
+    selectedObject = isExistPolygon(x, y)
     if (mode == 'create') {
       draw(1, [x, y, rgb[0], rgb[1], rgb[2]], gl.POINTS);
       var polygon = drawPolygon(countVertices, x, y, rgb);
@@ -371,19 +372,3 @@ canvas.addEventListener('mousedown', function (e) {
     }
   }
 });
-    if (isPolygon){
-        selectedObject = isExistPolygon(x, y)
-        if (mode == "create") {
-            draw(1, [x, y, rgb[0], rgb[1], rgb[2]], gl.POINTS)
-            var polygon = drawPolygon(countVertices, x, y, rgb)
-            if (polygon != 0) {
-                var object = {
-                    type: "polygon",
-                    vertices: polygon
-                }
-                arrObjects.push(object)
-                vertices = []
-            }
-        }
-    }
-})
