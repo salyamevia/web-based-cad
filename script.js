@@ -169,6 +169,29 @@ canvas.addEventListener("mousemove", function(event) {
             }
         }
     }
+    if(isPolygon){
+        if (mode == "translation"){
+            if (selectedObject != -1 && isDrag) {
+                var temp = translatePolygon(canvas, event, selectedObject, x, y)
+                x = temp[0]
+                y = temp[1]
+            }
+        }
+        if (mode == "rotation"){
+            if (selectedObject != -1 && isDrag) {
+                var temp = rotatePolygon(canvas, event, selectedObject, x, y)
+                x = temp[0]
+                y = temp[1]
+            }
+        }
+        if (mode == "dilatation"){
+            if (selectedObject != -1 && isDrag) {
+                var temp = dilatePolygon(canvas, event, selectedObject, x, y)
+                x = temp[0]
+                y = temp[1]
+            }
+        }
+    }
 })
 
 
@@ -202,6 +225,7 @@ canvas.addEventListener("mousedown", function(e) {
         }
     }
     if (isPolygon){
+        selectedObject = isExistPolygon(x, y)
         if (mode == "create") {
             draw(1, [x, y, rgb[0], rgb[1], rgb[2]], gl.POINTS)
             var polygon = drawPolygon(countVertices, x, y, rgb)
