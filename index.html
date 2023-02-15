@@ -178,18 +178,24 @@
                 aria-describedby="basic-addon3"
               />
             </div>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="setMode('addVertex')"
+            >
+              Add Vertex
+            </button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              onclick="setMode('removeVertex')"
+            >
+              RemoveVertex
+            </button>
           </div>
           <div class="file-container">
             <b>Save/Load Model</b>
             <input type="file" id="input-file" name="filename">
-            <!-- <input type="submit" onclick="loadFile()"> -->
-            <!-- <button
-              type="button"
-              class="btn btn-secondary"
-              onclick="loadFile()"
-            >
-              Submit
-            </button> -->
             <button
               type="button"
               class="btn btn-secondary"

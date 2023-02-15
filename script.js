@@ -25,6 +25,7 @@ var isRectangle = false;
 var isPolygon = false;
 var countVertices = 0;
 var isDrag = false;
+var isAddVertex = false;
 var mode = 'create';
 
 var x = 0;
@@ -50,6 +51,9 @@ var arrObjects = [];
  */
 function setMode(strMode) {
   mode = strMode;
+  if (mode == 'addVertex'){
+    isAddVertex = true;
+  }
   console.log(mode);
 }
 
@@ -365,6 +369,27 @@ canvas.addEventListener('mousedown', function (e) {
   x = getXCoordinate(canvas, e);
   y = getYCoordinate(canvas, e);
   console.log('x : ' + x + ' y : ' + y);
+  if (mode == 'addVertex'){
+    //draw a point
+    var pointx = x;
+    var pointy = y;
+    draw(1, [pointx, pointy, 0.0, 0.0, 0.0], gl.POINTS);
+    canvas.addEventListener('mousedown', function (event) {
+        x = getXCoordinate(canvas, event);
+        y = getYCoordinate(canvas, event);
+        var selectedObject2 = isExistPolygon(x,y);
+        if (selectedObject2 != -1 && isAddVertex){
+            addVertex(selectedObject2, pointx, pointy);
+        }
+    }, {once: true});
+  }
+
+  if (mode == 'removeVertex'){
+    var selectedObject2 = isExistPoint(x,y);
+    if(selectedObject2 != -1){
+        removeVertex(selectedObject2)
+    }
+  }
 
   // LINE
   if (isLine) {

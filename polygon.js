@@ -129,3 +129,18 @@ var dilatePolygon = function(canvas, event, selectedObject, x, y){
     drawAll()
     return [newx, newy]
 }
+
+var addVertex = function(selectedObject, x, y){
+    arrObjects[selectedObject].vertices.push(x)
+    arrObjects[selectedObject].vertices.push(y)
+    arrObjects[selectedObject].vertices.push(0.0)
+    arrObjects[selectedObject].vertices.push(0.0)
+    arrObjects[selectedObject].vertices.push(0.0)
+    isAddVertex = false
+    drawAll()
+}
+
+var removeVertex = function(selectedObject) {
+    arrObjects[selectedObject[0]].vertices.splice(selectedObject[1], 5)
+    drawAll()
+}
