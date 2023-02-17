@@ -1,23 +1,22 @@
 var canvas = document.getElementById('canvas');
 var gl = canvas.getContext('webgl', { preserveDrawingBuffer: true });
-var redSlider = document.getElementById("red");
-var greenSlider = document.getElementById("green");
-var blueSlider = document.getElementById("blue");
-var colorCheckbox = document.getElementById("color-all");
+var redSlider = document.getElementById('red');
+var greenSlider = document.getElementById('green');
+var blueSlider = document.getElementById('blue');
+var colorCheckbox = document.getElementById('color-all');
 
 var red = 0.0;
 redSlider.oninput = function () {
-    red = this.value / 255;
-}
+  red = this.value / 255;
+};
 var green = 0.0;
 greenSlider.oninput = function () {
-    green = this.value / 255;
-}
+  green = this.value / 255;
+};
 var blue = 0.0;
 blueSlider.oninput = function () {
-    blue = this.value / 255;
-}
-
+  blue = this.value / 255;
+};
 
 var isLine = false;
 var isSquare = false;
@@ -51,19 +50,18 @@ var arrObjects = [];
  */
 function setMode(strMode) {
   mode = strMode;
-  if (mode == 'addVertex'){
+  if (mode == 'addVertex') {
     isAddVertex = true;
   }
   console.log(mode);
 }
 
-function setColor(){
-    if (colorCheckbox.checked == true){
-        mode = "colorAll";
-    }
-    else{
-        mode = 'color';
-    }
+function setColor() {
+  if (colorCheckbox.checked == true) {
+    mode = 'colorAll';
+  } else {
+    mode = 'color';
+  }
 }
 
 /**
@@ -106,46 +104,65 @@ var isExistPoint = function (x, y) {
 };
 
 var changeColor = function (selectedObject, idxPoint) {
-    arrObjects[selectedObject].vertices[idxPoint+2] = red;
-    arrObjects[selectedObject].vertices[idxPoint+3] = green;
-    arrObjects[selectedObject].vertices[idxPoint+4] = blue;
-    drawAll();
-}
+  console.log(
+    'before warna SOLO:',
+    arrObjects[selectedObject].type,
+    arrObjects[selectedObject].vertices
+  );
+  arrObjects[selectedObject].vertices[idxPoint + 2] = red;
+  arrObjects[selectedObject].vertices[idxPoint + 3] = green;
+  arrObjects[selectedObject].vertices[idxPoint + 4] = blue;
+  console.log(
+    'aff warna SOLO:',
+    arrObjects[selectedObject].type,
+    arrObjects[selectedObject].vertices
+  );
+  drawAll();
+};
 
 var changeColorAll = function (selectedObject) {
-    for (var i = 0; i < arrObjects[selectedObject].vertices.length; i += 5) {
-        arrObjects[selectedObject].vertices[i+2] = red;
-        arrObjects[selectedObject].vertices[i+3] = green;
-        arrObjects[selectedObject].vertices[i+4] = blue;
-    }
-    drawAll();
-}
+  for (var i = 0; i < arrObjects[selectedObject].vertices.length; i += 5) {
+    arrObjects[selectedObject].vertices[i + 2] = red;
+    arrObjects[selectedObject].vertices[i + 3] = green;
+    arrObjects[selectedObject].vertices[i + 4] = blue;
+  }
+  console.log(
+    'after warna:',
+    arrObjects[selectedObject].type,
+    arrObjects[selectedObject].vertices
+  );
+  drawAll();
+};
 
 function saveFile() {
-    //convert arrObjects to json file and download it
-    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(arrObjects));
-    var downloadAnchorNode = document.createElement('a');
-    downloadAnchorNode.setAttribute("href",     dataStr);
-    downloadAnchorNode.setAttribute("download", "model" + ".json");
-    document.body.appendChild(downloadAnchorNode); // required for firefox
-    downloadAnchorNode.click();
-    downloadAnchorNode.remove();
+  //convert arrObjects to json file and download it
+  var dataStr =
+    'data:text/json;charset=utf-8,' +
+    encodeURIComponent(JSON.stringify(arrObjects));
+  var downloadAnchorNode = document.createElement('a');
+  downloadAnchorNode.setAttribute('href', dataStr);
+  downloadAnchorNode.setAttribute('download', 'model' + '.json');
+  document.body.appendChild(downloadAnchorNode); // required for firefox
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
 }
 
 function loadFile() {
-    document.getElementById('input-file').addEventListener('change', handleFileSelect, false);
+  document
+    .getElementById('input-file')
+    .addEventListener('change', handleFileSelect, false);
 }
-  
+
 function handleFileSelect(event) {
-    const reader = new FileReader()
-    reader.onload = handleFileLoad;
-    reader.readAsText(event.target.files[0])
+  const reader = new FileReader();
+  reader.onload = handleFileLoad;
+  reader.readAsText(event.target.files[0]);
 }
 
 function handleFileLoad(event) {
-    console.log(event);
-    arrObjects = JSON.parse(event.target.result)
-    drawAll()
+  console.log(event);
+  arrObjects = JSON.parse(event.target.result);
+  drawAll();
 }
 
 /* =============== RENDERER FUNCTIONS =============== */
@@ -261,7 +278,7 @@ var drawAll = function () {
         draw(
           arrObjects[i].vertices.length / 5,
           arrObjects[i].vertices,
-          gl.TRIANGLE_FAN
+          gl.TRIANGLE_STRIP
         );
         break;
       case 'polygon':
@@ -306,6 +323,7 @@ canvas.addEventListener('mouseup', function mouseUp() {
 /* =============== DRAWING MODE EVENT HANDLER =============== */
 
 canvas.addEventListener('mousemove', function (event) {
+  // --------------- LINE ---------------
   if (isLine) {
     if (mode == 'move') {
       if (selectedObject != -1 && isDrag) {
@@ -334,34 +352,45 @@ canvas.addEventListener('mousemove', function (event) {
       }
     }
   }
-    if(isPolygon){
-        if (mode == "move"){
-            if (selectedObject != -1 && isDrag) {
-                moveVertex(canvas, event, selectedObject, idxPoint)
-            }
+  // --------------- SQUARE ---------------
+  if (isSquare) {
+    switch (mode) {
+      case 'move':
+        if (selectedObject != -1 && isDrag) {
+          moveVertex(canvas, event, selectedObject, idxPoint);
         }
-        if (mode == "translation"){
-            if (selectedObject != -1 && isDrag) {
-                var temp = translatePolygon(canvas, event, selectedObject, x, y)
-                x = temp[0]
-                y = temp[1]
-            }
-        }
-        if (mode == "rotation"){
-            if (selectedObject != -1 && isDrag) {
-                var temp = rotatePolygon(canvas, event, selectedObject, x, y)
-                x = temp[0]
-                y = temp[1]
-            }
-        }
-        if (mode == "dilatation"){
-            if (selectedObject != -1 && isDrag) {
-                var temp = dilatePolygon(canvas, event, selectedObject, x, y)
-                x = temp[0]
-                y = temp[1]
-            }
-        }
+        break;
     }
+  }
+  // --------------- POLYGON ---------------
+  if (isPolygon) {
+    if (mode == 'move') {
+      if (selectedObject != -1 && isDrag) {
+        moveVertex(canvas, event, selectedObject, idxPoint);
+      }
+    }
+    if (mode == 'translation') {
+      if (selectedObject != -1 && isDrag) {
+        var temp = translatePolygon(canvas, event, selectedObject, x, y);
+        x = temp[0];
+        y = temp[1];
+      }
+    }
+    if (mode == 'rotation') {
+      if (selectedObject != -1 && isDrag) {
+        var temp = rotatePolygon(canvas, event, selectedObject, x, y);
+        x = temp[0];
+        y = temp[1];
+      }
+    }
+    if (mode == 'dilatation') {
+      if (selectedObject != -1 && isDrag) {
+        var temp = dilatePolygon(canvas, event, selectedObject, x, y);
+        x = temp[0];
+        y = temp[1];
+      }
+    }
+  }
 });
 
 canvas.addEventListener('mousedown', function (e) {
@@ -369,25 +398,29 @@ canvas.addEventListener('mousedown', function (e) {
   x = getXCoordinate(canvas, e);
   y = getYCoordinate(canvas, e);
   console.log('x : ' + x + ' y : ' + y);
-  if (mode == 'addVertex'){
+  if (mode == 'addVertex') {
     //draw a point
     var pointx = x;
     var pointy = y;
     draw(1, [pointx, pointy, 0.0, 0.0, 0.0], gl.POINTS);
-    canvas.addEventListener('mousedown', function (event) {
+    canvas.addEventListener(
+      'mousedown',
+      function (event) {
         x = getXCoordinate(canvas, event);
         y = getYCoordinate(canvas, event);
-        var selectedObject2 = isExistPolygon(x,y);
-        if (selectedObject2 != -1 && isAddVertex){
-            addVertex(selectedObject2, pointx, pointy);
+        var selectedObject2 = isExistPolygon(x, y);
+        if (selectedObject2 != -1 && isAddVertex) {
+          addVertex(selectedObject2, pointx, pointy);
         }
-    }, {once: true});
+      },
+      { once: true }
+    );
   }
 
-  if (mode == 'removeVertex'){
-    var selectedObject2 = isExistPoint(x,y);
-    if(selectedObject2 != -1){
-        removeVertex(selectedObject2)
+  if (mode == 'removeVertex') {
+    var selectedObject2 = isExistPoint(x, y);
+    if (selectedObject2 != -1) {
+      removeVertex(selectedObject2);
     }
   }
 
@@ -415,19 +448,29 @@ canvas.addEventListener('mousedown', function (e) {
       }
     }
     if (mode == 'color') {
-        if (selectedObject != -1) {
-            changeColor(selectedObject, idxPoint);
-        }
+      if (selectedObject != -1) {
+        changeColor(selectedObject, idxPoint);
+      }
     }
     if (mode == 'colorAll') {
-        if (selectedObject != -1) {
-            changeColorAll(selectedObject);
-        }
+      if (selectedObject != -1) {
+        changeColorAll(selectedObject);
+      }
     }
   }
   // SQUARE
   if (isSquare) {
     switch (mode) {
+      case 'move' || 'color':
+        var idx = isExistPoint(x, y);
+        if (idx != -1) {
+          selectedObject = idx[0];
+          idxPoint = idx[1];
+        } else {
+          selectedObject = isSquareExists(x, y);
+          console.log('halo', selectedObject);
+        }
+        break;
       case 'create':
         draw(1, [x, y, rgb[0], rgb[1], rgb[2]], gl.POINTS);
 
@@ -438,6 +481,16 @@ canvas.addEventListener('mousedown', function (e) {
         if (square != 0) {
           arrObjects.push({ type: 'square', vertices: square });
           vertices = [];
+        }
+        break;
+      case 'color':
+        if (selectedObject != -1) {
+          changeColor(selectedObject, idxPoint);
+        }
+        break;
+      case 'colorAll':
+        if (selectedObject != -1) {
+          changeColorAll(selectedObject, idxPoint);
         }
         break;
     }
@@ -468,13 +521,13 @@ canvas.addEventListener('mousedown', function (e) {
   // POLYGON
   if (isPolygon) {
     if (mode == 'move' || mode == 'color') {
-        var idx = isExistPoint(x, y);
-        if (idx != -1) {
-          selectedObject = idx[0];
-          idxPoint = idx[1];
-        }
+      var idx = isExistPoint(x, y);
+      if (idx != -1) {
+        selectedObject = idx[0];
+        idxPoint = idx[1];
+      }
     } else {
-        selectedObject = isExistPolygon(x, y);
+      selectedObject = isExistPolygon(x, y);
     }
     if (mode == 'create') {
       draw(1, [x, y, rgb[0], rgb[1], rgb[2]], gl.POINTS);
@@ -489,14 +542,14 @@ canvas.addEventListener('mousedown', function (e) {
       }
     }
     if (mode == 'color') {
-        if (selectedObject != -1) {
-            changeColor(selectedObject, idxPoint);
-        }
+      if (selectedObject != -1) {
+        changeColor(selectedObject, idxPoint);
+      }
     }
     if (mode == 'colorAll') {
-        if (selectedObject != -1) {
-            changeColorAll(selectedObject);
-        }
+      if (selectedObject != -1) {
+        changeColorAll(selectedObject);
+      }
     }
   }
 });
