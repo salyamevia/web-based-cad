@@ -8,7 +8,7 @@ let setSquare = () => {
   isPolygon = false;
 };
 
-/* =============== MAIN FUNCTIONS ===============
+/* =============== MAIN FUNCTIONS =============== */
 
 /**
  * Draw vertices, <X, Y, R, G, B>
@@ -86,6 +86,7 @@ let translateSquare = (canvas, event, selectedObject, currX, currY) => {
  * @param {*} currY current Y coordinate
  * @returns [targetX, targetY] new target coordinates
  */
+// TODO: Make the dimentions stay intact when rotated
 let rotateSquare = (canvas, event, selectedObject, currX, currY) => {
   // Get the square coordinates
   var squareCoords = getSquareProperties(selectedObject);
@@ -117,6 +118,15 @@ let rotateSquare = (canvas, event, selectedObject, currX, currY) => {
   return [targetX, targetY];
 };
 
+/**
+ * Dilate the selected square
+ * @param {*} canvas
+ * @param {*} event
+ * @param {*} selectedObject position of object within object array
+ * @param {*} currX current X coordinate
+ * @param {*} currY current Y coordinate
+ * @returns [targetX, targetY] new target coordinates
+ */
 let dilateSquare = (canvas, event, selectedObject, currX, currY) => {
   // Get the square coordinates
   var squareCoords = getSquareProperties(selectedObject);
@@ -146,6 +156,16 @@ let dilateSquare = (canvas, event, selectedObject, currX, currY) => {
   return [targetX, targetY];
 };
 
+/**
+ * Shear horizontally or vertically for the square
+ * @param {*} canvas
+ * @param {*} event
+ * @param {*} selectedObject position of object within object array
+ * @param {*} currX current X coordinate
+ * @param {*} currY current Y coordinate
+ * @param {*} isHorizontalShear true horizontal, false vertical shear
+ * @returns [targetX, targetY] new target coordinates
+ */
 let shearSquare = (
   canvas,
   event,

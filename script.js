@@ -273,6 +273,18 @@ var drawAll = function () {
           gl.TRIANGLE_STRIP
         );
         break;
+      case 'rectangle':
+        draw(
+          arrObjects[i].vertices.length / 5,
+          arrObjects[i].vertices,
+          gl.POINTS
+        );
+        draw(
+          arrObjects[i].vertices.length / 5,
+          arrObjects[i].vertices,
+          gl.TRIANGLE_STRIP
+        );
+        break;
       case 'polygon':
         draw(
           arrObjects[i].vertices.length / 5,
@@ -362,6 +374,51 @@ canvas.addEventListener('mousemove', function (event) {
       case 'rotation':
         if (selectedObject != -1 && isDrag) {
           var temp = rotateSquare(canvas, event, selectedObject, x, y);
+          x = temp[0];
+          y = temp[1];
+        }
+        break;
+      case 'dilatation':
+        if (selectedObject != -1 && isDrag) {
+          var temp = dilateSquare(canvas, event, selectedObject, x, y);
+          x = temp[0];
+          y = temp[1];
+        }
+        break;
+      case 'shear':
+        if (selectedObject != -1 && isDrag) {
+          var temp = shearSquare(
+            canvas,
+            event,
+            selectedObject,
+            x,
+            y,
+            isHorizontalShear
+          );
+          x = temp[0];
+          y = temp[1];
+        }
+        break;
+    }
+  }
+  // --------------- RECTANGLE ---------------
+  if (isRectangle) {
+    switch (mode) {
+      case 'move':
+        if (selectedObject != -1 && isDrag) {
+          moveVertex(canvas, event, selectedObject, idxPoint);
+        }
+        break;
+      case 'translation':
+        if (selectedObject != -1 && isDrag) {
+          var temp = translateSquare(canvas, event, selectedObject, x, y);
+          x = temp[0];
+          y = temp[1];
+        }
+        break;
+      case 'rotation':
+        if (selectedObject != -1 && isDrag) {
+          var temp = rotateRectangle(canvas, event, selectedObject, x, y);
           x = temp[0];
           y = temp[1];
         }
@@ -488,7 +545,13 @@ canvas.addEventListener('mousedown', function (e) {
   // SQUARE
   if (isSquare) {
     switch (mode) {
-      case 'move' || 'color':
+      case 'move' ||
+        'color' ||
+        'create' ||
+        'dilatation' ||
+        'translation' ||
+        'rotation' ||
+        'shear':
         var idx = isExistPoint(x, y);
         if (idx != -1) {
           selectedObject = idx[0];
@@ -525,6 +588,22 @@ canvas.addEventListener('mousedown', function (e) {
   // RECTANGLE
   if (isRectangle) {
     switch (mode) {
+      case 'move' ||
+        'color' ||
+        'create' ||
+        'dilatation' ||
+        'translation' ||
+        'rotation' ||
+        'shear':
+        var idx = isExistPoint(x, y);
+        if (idx != -1) {
+          selectedObject = idx[0];
+          idxPoint = idx[1];
+        } else {
+          selectedObject = isRectangleExists(x, y);
+          console.log('halo', selectedObject);
+        }
+        break;
       case 'create':
         draw(1, [x, y, rgb[0], rgb[1], rgb[2]], gl.POINTS);
 
@@ -541,6 +620,16 @@ canvas.addEventListener('mousedown', function (e) {
         if (square != 0) {
           arrObjects.push({ type: 'rectangle', vertices: rectangle });
           vertices = [];
+        }
+        break;
+      case 'color':
+        if (selectedObject != -1) {
+          changeColor(selectedObject, idxPoint);
+        }
+        break;
+      case 'colorAll':
+        if (selectedObject != -1) {
+          changeColorAll(selectedObject, idxPoint);
         }
         break;
     }
