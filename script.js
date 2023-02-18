@@ -25,6 +25,7 @@ var isPolygon = false;
 var countVertices = 0;
 var isDrag = false;
 var isAddVertex = false;
+var isHorizontalShear = false;
 var mode = 'create';
 
 var x = 0;
@@ -63,6 +64,11 @@ function setColor() {
     mode = 'color';
   }
 }
+
+const setHorizontalShearDir = (isHorizontal) => {
+  isHorizontalShear = isHorizontal;
+  console.log('Shear mode:', isHorizontalShear);
+};
 
 /**
  * Get the X coordinate from current cursor position
@@ -104,19 +110,10 @@ var isExistPoint = function (x, y) {
 };
 
 var changeColor = function (selectedObject, idxPoint) {
-  console.log(
-    'before warna SOLO:',
-    arrObjects[selectedObject].type,
-    arrObjects[selectedObject].vertices
-  );
   arrObjects[selectedObject].vertices[idxPoint + 2] = red;
   arrObjects[selectedObject].vertices[idxPoint + 3] = green;
   arrObjects[selectedObject].vertices[idxPoint + 4] = blue;
-  console.log(
-    'aff warna SOLO:',
-    arrObjects[selectedObject].type,
-    arrObjects[selectedObject].vertices
-  );
+
   drawAll();
 };
 
@@ -126,11 +123,6 @@ var changeColorAll = function (selectedObject) {
     arrObjects[selectedObject].vertices[i + 3] = green;
     arrObjects[selectedObject].vertices[i + 4] = blue;
   }
-  console.log(
-    'after warna:',
-    arrObjects[selectedObject].type,
-    arrObjects[selectedObject].vertices
-  );
   drawAll();
 };
 
@@ -358,6 +350,41 @@ canvas.addEventListener('mousemove', function (event) {
       case 'move':
         if (selectedObject != -1 && isDrag) {
           moveVertex(canvas, event, selectedObject, idxPoint);
+        }
+        break;
+      case 'translation':
+        if (selectedObject != -1 && isDrag) {
+          var temp = translateSquare(canvas, event, selectedObject, x, y);
+          x = temp[0];
+          y = temp[1];
+        }
+        break;
+      case 'rotation':
+        if (selectedObject != -1 && isDrag) {
+          var temp = rotateSquare(canvas, event, selectedObject, x, y);
+          x = temp[0];
+          y = temp[1];
+        }
+        break;
+      case 'dilatation':
+        if (selectedObject != -1 && isDrag) {
+          var temp = dilateSquare(canvas, event, selectedObject, x, y);
+          x = temp[0];
+          y = temp[1];
+        }
+        break;
+      case 'shear':
+        if (selectedObject != -1 && isDrag) {
+          var temp = shearSquare(
+            canvas,
+            event,
+            selectedObject,
+            x,
+            y,
+            isHorizontalShear
+          );
+          x = temp[0];
+          y = temp[1];
         }
         break;
     }

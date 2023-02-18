@@ -103,15 +103,22 @@
                 <li>
                   <a
                     class="dropdown-item"
-                    onclick="setDelete();updateSelector(this)"
-                    >Delete</a
+                    onclick="setMode('move');updateSelector(this)"
+                    >Move</a
                   >
                 </li>
                 <li>
                   <a
                     class="dropdown-item"
-                    onclick="setMode('move');updateSelector(this)"
-                    >Move</a
+                    onclick="setMode('shear');setHorizontalShearDir(true);updateSelector(this)"
+                    >Horizontal Shear</a
+                  >
+                </li>
+                <li>
+                  <a
+                    class="dropdown-item"
+                    onclick="setMode('shear');setHorizontalShearDir(false);updateSelector(this)"
+                    >Vertical Shear</a
                   >
                 </li>
                 <li>
