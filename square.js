@@ -277,6 +277,12 @@ let getSquareProperties = (selectedObject) => {
   var centerX = (x0 + x1 + x2 + x3) / 4;
   var centerY = (y0 + y1 + y2 + y3) / 4;
 
+  // Get the diagonals
+  var diagonal = Math.sqrt(Math.pow(maxX - minX, 2) + Math.pow(maxY - minY, 2));
+
+  // Get the size
+  var size = Math.sqrt(2) * diagonal;
+
   return {
     minX: minX,
     maxX: maxX,
@@ -284,5 +290,7 @@ let getSquareProperties = (selectedObject) => {
     maxY: maxY,
     centerX: centerX,
     centerY: centerY,
+    diagonal: diagonal,
+    size: size,
   };
 };

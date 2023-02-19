@@ -100,7 +100,7 @@ let rotateRectangle = (canvas, event, selectedObject, currX, currY) => {
 let isRectangleExists = (x, y) => {
   // Search from arrObjects
   for (var i = 0; i < arrObjects.length; i++) {
-    if (arrObjects[i].type == 'square') {
+    if (arrObjects[i].type == 'rectangle') {
       // Get maxmimum and minimum value
       var squareCoords = getRectangleProperties(i);
       var minX = squareCoords.minX;
