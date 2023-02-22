@@ -35,6 +35,66 @@ var drawPolygon = function(countVert, x, y, rgb){
     }
 }
 
+var drawConvexHull = function(countVert, x, y, rgb){
+    if (n < countVert-1){
+        vertices.push(x)
+        vertices.push(y)
+        vertices.push(rgb[0])
+        vertices.push(rgb[1])
+        vertices.push(rgb[2])
+        n++;
+        return 0
+    }
+    else {
+        vertices.push(x)
+        vertices.push(y)
+        vertices.push(rgb[0])
+        vertices.push(rgb[1])
+        vertices.push(rgb[2])
+        console.log(vertices)
+        // compute convex hull of vertices
+        var hull = []
+        var leftmost = 0
+        for (var i = 0; i < vertices.length; i+=5) {
+            if(vertices[i] < vertices[leftmost]){
+                leftmost = i
+            }
+        }
+        var p = leftmost
+        var q = 0
+        do{
+            hull.push(vertices[p])
+            hull.push(vertices[p+1])
+            hull.push(vertices[p+2])
+            hull.push(vertices[p+3])
+            hull.push(vertices[p+4])
+            q = (p+5) % vertices.length
+            for (var i = 0; i < vertices.length; i+=5) {
+                if(orientation(vertices[p], vertices[p+1], vertices[i], vertices[i+1], vertices[q], vertices[q+1]) == 2){
+                    q = i
+                }
+            }
+            p = q
+        }while(p != leftmost)
+        draw(hull.length/5, hull, gl.TRIANGLE_FAN)
+        n = 0;
+        return hull
+    }
+}
+
+var orientation = function(p0x, p0y, p1x, p1y, p2x, p2y){
+    var val = (p1y - p0y) * (p2x - p1x) - (p1x - p0x) * (p2y - p1y)
+    if(val == 0){
+        return 0
+    }
+    else if(val > 0){
+        return 1
+    }
+    else{
+        return 2
+    }
+}
+
 var isInsideTriangle = function(px, py, p0x, p0y, p1x, p1y, p2x, p2y) {
     //compute using barycentric
     var area = 0.5 *(-p1y*p2x + p0y*(-p1x + p2x) + p0x*(p1y - p2y) + p1x*p2y)
