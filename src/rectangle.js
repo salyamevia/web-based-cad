@@ -43,32 +43,36 @@ let drawRectangle = (x, y, rectWidth, rectHeight, rgb, aspect) => {
   vertices.push(rgb[2]);
 
   console.log('Rectangle:', vertices);
-  renderRectangle(vertices, aspect);
+  let verticeToRender = prepareToRenderRectangle(vertices, aspect);
+  renderRectangle(verticeToRender);
 
   return vertices;
 };
 
-let renderRectangle = (vertices, aspect) => {
+let prepareToRenderRectangle = (vertices, aspect) => {
   let verticeToRender = vertices.slice();
 
   for (let i = 1; i < vertices.length; i += 5) {
     verticeToRender[i] *= aspect;
   }
+  return verticeToRender;
+};
 
-  for (let i = 0; i < verticeToRender.length; i += 5) {
+let renderRectangle = (vertices) => {
+  for (let i = 0; i < vertices.length; i += 5) {
     draw(
       1,
       [
-        verticeToRender[i],
-        verticeToRender[i + 1],
-        verticeToRender[i + 2],
-        verticeToRender[i + 3],
-        verticeToRender[i + 4],
+        vertices[i],
+        vertices[i + 1],
+        vertices[i + 2],
+        vertices[i + 3],
+        vertices[i + 4],
       ],
       gl.POINTS
     );
   }
-  draw(4, verticeToRender, gl.TRIANGLE_STRIP);
+  draw(4, vertices, gl.TRIANGLE_STRIP);
 };
 /**
  * Rotate the selected square

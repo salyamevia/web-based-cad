@@ -99,14 +99,30 @@ var getYCoordinate = function (canvas, event) {
  */
 var isExistPoint = function (x, y) {
   for (var i = 0; i < arrObjects.length; i++) {
-    for (var j = 0; j < arrObjects[i].vertices.length; j += 5) {
-      var distX = Math.abs(arrObjects[i].vertices[j] - x);
-      var distY = Math.abs(arrObjects[i].vertices[j + 1] - y);
-      if (distX < 0.01 && distY < 0.01) {
+    if (arrObjects[i].type == 'square') {
+      var arrayToCheck = prepareToRenderSquare(
+        arrObjects[i].vertices,
+        canvasAspectRatio
+      );
+    } else if (arrObjects[i].type == 'rectangle') {
+      var arrayToCheck = prepareToRenderRectangle(
+        arrObjects[i].vertices,
+        canvasAspectRatio
+      );
+    } else {
+      var arrayToCheck = arrObjects[i].vertices.slice();
+    }
+
+    for (var j = 0; j < arrayToCheck.length; j += 5) {
+      var distX = Math.abs(arrayToCheck[j] - x);
+      var distY = Math.abs(arrayToCheck[j + 1] - y);
+
+      if (distX < 0.1 && distY < 0.1) {
         return [i, j];
       }
     }
   }
+
   return -1;
 };
 
@@ -270,7 +286,11 @@ var drawAll = function () {
         renderSquare(verticesRender);
         break;
       case 'rectangle':
-        renderRectangle(arrObjects[i].vertices, canvasAspectRatio);
+        let verticesRender1 = prepareToRenderRectangle(
+          arrObjects[i].vertices,
+          canvasAspectRatio
+        );
+        renderRectangle(verticesRender1);
         break;
       case 'polygon':
         draw(
@@ -469,6 +489,8 @@ canvas.addEventListener('mousedown', function (e) {
   x = getXCoordinate(canvas, e);
   y = getYCoordinate(canvas, e);
   console.log('x : ' + x + ' y : ' + y);
+
+  // ADD REMOVE VERTEX
   if (mode == 'addVertex') {
     //draw a point
     var pointx = x;
@@ -531,23 +553,16 @@ canvas.addEventListener('mousedown', function (e) {
   }
   // SQUARE
   if (isSquare) {
+    if (mode == 'move' || mode == 'color') {
+      var idx = isExistPoint(x, y);
+      if (idx != -1) {
+        selectedObject = idx[0];
+        idxPoint = idx[1];
+      }
+    } else {
+      selectedObject = isSquareExists(x, y);
+    }
     switch (mode) {
-      case 'move' ||
-        'color' ||
-        'create' ||
-        'dilatation' ||
-        'translation' ||
-        'rotation' ||
-        'shear':
-        var idx = isExistPoint(x, y);
-        if (idx != -1) {
-          selectedObject = idx[0];
-          idxPoint = idx[1];
-        } else {
-          selectedObject = isSquareExists(x, y);
-          console.log('halo', selectedObject);
-        }
-        break;
       case 'create':
         customSize = parseFloat(document.getElementById('squareSize').value);
         size = customSize != null ? customSize : size;
@@ -572,23 +587,17 @@ canvas.addEventListener('mousedown', function (e) {
   }
   // RECTANGLE
   if (isRectangle) {
+    if (mode == 'move' || mode == 'color') {
+      var idx = isExistPoint(x, y);
+      if (idx != -1) {
+        selectedObject = idx[0];
+        idxPoint = idx[1];
+      }
+    } else {
+      selectedObject = isRectangleExists(x, y);
+      console.log('halo', selectedObject);
+    }
     switch (mode) {
-      case 'move' ||
-        'color' ||
-        'create' ||
-        'dilatation' ||
-        'translation' ||
-        'rotation' ||
-        'shear':
-        var idx = isExistPoint(x, y);
-        if (idx != -1) {
-          selectedObject = idx[0];
-          idxPoint = idx[1];
-        } else {
-          selectedObject = isRectangleExists(x, y);
-          console.log('halo', selectedObject);
-        }
-        break;
       case 'create':
         customRectWidth = parseFloat(
           document.getElementById('rectWidth').value
