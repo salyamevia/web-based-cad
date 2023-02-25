@@ -17,7 +17,7 @@ let setRectangle = () => {
  * @param {array of int} rgb
  * @returns vertices of the rectangle
  */
-let drawRectangle = (x, y, rectWidth, rectHeight, rgb) => {
+let drawRectangle = (x, y, rectWidth, rectHeight, rgb, aspect) => {
   vertices.push(x + rectWidth);
   vertices.push(y);
   vertices.push(rgb[0]);
@@ -43,13 +43,33 @@ let drawRectangle = (x, y, rectWidth, rectHeight, rgb) => {
   vertices.push(rgb[2]);
 
   console.log('Rectangle:', vertices);
-  draw(1, [x + rectWidth, y, rgb[0], rgb[1], rgb[2]], gl.POINTS);
-  draw(1, [x + rectWidth, y + rectHeight, rgb[0], rgb[1], rgb[2]], gl.POINTS);
-  draw(1, [x, y + rectHeight, rgb[0], rgb[1], rgb[2]], gl.POINTS);
-  draw(4, vertices, gl.TRIANGLE_STRIP);
+  renderRectangle(vertices, aspect);
+
   return vertices;
 };
 
+let renderRectangle = (vertices, aspect) => {
+  let verticeToRender = vertices.slice();
+
+  for (let i = 1; i < vertices.length; i += 5) {
+    verticeToRender[i] *= aspect;
+  }
+
+  for (let i = 0; i < verticeToRender.length; i += 5) {
+    draw(
+      1,
+      [
+        verticeToRender[i],
+        verticeToRender[i + 1],
+        verticeToRender[i + 2],
+        verticeToRender[i + 3],
+        verticeToRender[i + 4],
+      ],
+      gl.POINTS
+    );
+  }
+  draw(4, verticeToRender, gl.TRIANGLE_STRIP);
+};
 /**
  * Rotate the selected square
  * @param {*} canvas

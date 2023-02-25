@@ -270,16 +270,7 @@ var drawAll = function () {
         renderSquare(verticesRender);
         break;
       case 'rectangle':
-        draw(
-          arrObjects[i].vertices.length / 5,
-          arrObjects[i].vertices,
-          gl.POINTS
-        );
-        draw(
-          arrObjects[i].vertices.length / 5,
-          arrObjects[i].vertices,
-          gl.TRIANGLE_STRIP
-        );
+        renderRectangle(arrObjects[i].vertices, canvasAspectRatio);
         break;
       case 'polygon':
         draw(
@@ -599,8 +590,6 @@ canvas.addEventListener('mousedown', function (e) {
         }
         break;
       case 'create':
-        draw(1, [x, y, rgb[0], rgb[1], rgb[2]], gl.POINTS);
-
         customRectWidth = parseFloat(
           document.getElementById('rectWidth').value
         );
@@ -610,7 +599,14 @@ canvas.addEventListener('mousedown', function (e) {
         rectWidth = customRectWidth != null ? customRectWidth : rectWidth;
         rectHeight = customRectHeight != null ? customRectHeight : rectHeight;
 
-        var rectangle = drawRectangle(x, y, rectWidth, rectHeight, rgb);
+        var rectangle = drawRectangle(
+          x,
+          y,
+          rectWidth,
+          rectHeight,
+          rgb,
+          canvasAspectRatio
+        );
         if (square != 0) {
           arrObjects.push({ type: 'rectangle', vertices: rectangle });
           vertices = [];
