@@ -17,8 +17,8 @@ let setSquare = () => {
  * @param {array of int} rgb
  * @returns vertices of the square
  */
-let drawSquare = (x, y, size, rgb) => {
-  vertices.push(x + size * 0.65);
+let drawSquare = (x, y, size, rgb, aspect) => {
+  vertices.push(x + size);
   vertices.push(y);
   vertices.push(rgb[0]);
   vertices.push(rgb[1]);
@@ -30,7 +30,7 @@ let drawSquare = (x, y, size, rgb) => {
   vertices.push(rgb[1]);
   vertices.push(rgb[2]);
 
-  vertices.push(x + size * 0.65);
+  vertices.push(x + size);
   vertices.push(y + size);
   vertices.push(rgb[0]);
   vertices.push(rgb[1]);
@@ -42,14 +42,37 @@ let drawSquare = (x, y, size, rgb) => {
   vertices.push(rgb[1]);
   vertices.push(rgb[2]);
 
-  console.log('Square:', vertices);
+  let verticesRender = prepareToRenderSquare(vertices, aspect);
+  renderSquare(verticesRender);
 
-  // Draw the points
-  draw(1, [x + size * 0.65, y, rgb[0], rgb[1], rgb[2]], gl.POINTS);
-  draw(1, [x + size * 0.65, y + size, rgb[0], rgb[1], rgb[2]], gl.POINTS);
-  draw(1, [x, y + size, rgb[0], rgb[1], rgb[2]], gl.POINTS);
-  draw(4, vertices, gl.TRIANGLE_STRIP);
   return vertices;
+};
+
+let prepareToRenderSquare = (vertices, aspect) => {
+  let verticeToRender = vertices.slice();
+  for (let i = 1; i < vertices.length; i += 5) {
+    verticeToRender[i] *= aspect;
+  }
+  return verticeToRender;
+};
+
+let renderSquare = (vertices) => {
+  // Draw the points
+  for (let i = 0; i < vertices.length; i += 5) {
+    draw(
+      1,
+      [
+        vertices[i],
+        vertices[i + 1],
+        vertices[i + 2],
+        vertices[i + 3],
+        vertices[i + 4],
+      ],
+      gl.POINTS
+    );
+  }
+
+  draw(4, vertices, gl.TRIANGLE_STRIP);
 };
 
 /**
@@ -101,16 +124,19 @@ let rotateSquare = (canvas, event, selectedObject, currX, currY) => {
   const angle =
     Math.atan2(targetY - centerY, targetX - centerX) -
     Math.atan2(currY - centerY, currX - centerX);
+  const cos = Math.cos(angle);
+  const sin = Math.sin(angle);
 
+  console.log('angle', angle, 'cos', cos, 'sin', sin);
+  console.log('center', centerX, centerY);
+  console.log('------');
   // Update the rotation to the square
   for (let i = 0; i < arrObjects[selectedObject].vertices.length; i += 5) {
     const x = arrObjects[selectedObject].vertices[i] - centerX;
     const y = arrObjects[selectedObject].vertices[i + 1] - centerY;
 
-    arrObjects[selectedObject].vertices[i] =
-      x * Math.cos(angle) - y * Math.sin(angle) + centerX;
-    arrObjects[selectedObject].vertices[i + 1] =
-      x * Math.sin(angle) + y * Math.cos(angle) + centerY;
+    arrObjects[selectedObject].vertices[i] = x * cos - y * sin + centerX;
+    arrObjects[selectedObject].vertices[i + 1] = x * sin + y * cos + centerY;
   }
   drawAll();
 
