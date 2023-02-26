@@ -4,6 +4,7 @@ var redSlider = document.getElementById('red');
 var greenSlider = document.getElementById('green');
 var blueSlider = document.getElementById('blue');
 var colorCheckbox = document.getElementById('color-all');
+var convexHull = document.getElementById('convex-hull');
 
 var red = 0.0;
 redSlider.oninput = function () {
@@ -646,7 +647,12 @@ canvas.addEventListener('mousedown', function (e) {
     }
     if (mode == 'create') {
       draw(1, [x, y, rgb[0], rgb[1], rgb[2]], gl.POINTS);
-      var polygon = drawPolygon(countVertices, x, y, rgb);
+      if(convexHull.checked == true){
+        var polygon = drawConvexHull(countVertices, x, y, rgb);
+      }
+      else{
+        var polygon = drawPolygon(countVertices, x, y, rgb);
+      }
       if (polygon != 0) {
         var object = {
           type: 'polygon',
